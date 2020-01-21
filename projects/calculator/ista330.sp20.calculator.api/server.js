@@ -11,9 +11,9 @@ app.get('/', (request , response) => {
 var urlParts = url.parse(request.url , true);
 var parameters = urlParts . query ;
 var expression = parameters . expression ;
- response.send(expression + " = ?");
+//var output = expression;
+ response.send(expression + " = " + eval(expression));
 });
 
 // start the server
- app.listen(port, ()
-    => console . log (  'Listening on port'  + port ));
+ app.listen(port, ()=> console.log (  'Listening on port'  + port ));

@@ -1,13 +1,13 @@
 {
   "name": "ista330.sp20.calculator.api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Project One",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "",
+  "author": "Subash Mainali",
   "license": "ISC",
   "devDependencies": {
     "express": "^4.17.1",
