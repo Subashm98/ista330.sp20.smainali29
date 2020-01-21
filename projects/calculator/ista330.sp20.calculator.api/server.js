@@ -8,11 +8,10 @@ const port = 3001;
 
 // the methods
 app.get('/', (request , response) => {
-var urlParts = url.parse(request.url , true);
-var parameters = urlParts . query ;
-var expression = parameters . expression ;
-//var output = expression;
- response.send(expression + " = " + eval(expression));
+   var urlParts = url.parse(request.url , true);
+   var parameters = urlParts . query ;
+   var expression = parameters . expression ;
+   response.send(expression + " = " + eval(expression));
 });
 
 // start the server
