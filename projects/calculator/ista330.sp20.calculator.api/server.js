@@ -1,6 +1,7 @@
 // dependencies
 const express = require('express');
 const url = require('url');
+const calculator = require('./calculator.js');
 
 //create the server
 const app = express(); 
@@ -9,9 +10,9 @@ const port = 3001;
 // the methods
 app.get('/', (request , response) => {
    var urlParts = url.parse(request.url , true);
-   var parameters = urlParts . query ;
-   var expression = parameters . expression ;
-   response.send(expression + " = " + eval(expression));
+   var parameters = urlParts.query ;
+   var expression = parameters.expression ;
+   response.send(expression + " = " + calculator.calculate(expression));
 });
 
 // start the server
