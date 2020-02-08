@@ -55,5 +55,9 @@ describe('#calculator(expression)', function(){
     it('should return SyntaxError when expression is "5***5"', function(){
         assert.equal(calculator.calculate('5***5'), SyntaxError);
     });
+
+    it('should return 22.103500000000004 when expression is "20.3434 + 49.99848 - 48.23838"', function(){
+        assert.equal(calculator.calculate('20.3434 + 49.99848 - 48.23838'), 22.103500000000004);
+    });
     
 });

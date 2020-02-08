@@ -111,7 +111,7 @@ var calculate = function(expression){
  var add = function(expression, addIndx){
     let nums = extractNumbers(expression, addIndx); // multiplication operator
     let exp  = nums[0] + '+' + nums[1];
-    let output = parseInt(nums[0]) + parseInt(nums[1]);
+    let output = parseFloat(nums[0]) + parseFloat(nums[1]);
     expression = expression.replace(exp,output);
     return expression;
  }
@@ -125,34 +125,35 @@ var calculate = function(expression){
 
  var extractNumbers = function(expression,indx){
     let leftIndx = indx - 1;
-    while(!(isNaN(expression.charAt(leftIndx))) && leftIndx >= 0){
-        leftIndx--;
+    // while(!(isNaN(expression.charAt(leftIndx))) && leftIndx >= 0){
+    //     leftIndx--;
+    // }
+    while(leftIndx >= 0){
+        if( !(isNaN(expression[leftIndx])) || expression[leftIndx] === '.'){
+            leftIndx--;
+        }else{
+            break;
+        }
     }
 
     let leftExp = expression.slice(leftIndx+1, indx);
-    // let isNegativeNum = false;
-    // //console.log(leftIndx + " : " + indx);
-    // if(leftIndx+1 == indx){
-    //     if(expression.charAt(indx) === '-'){
-    //         isNegativeNum = true;
-    //         //console.log('isNegative')
-    //     }
-    // }
-    //console.log("Left exp " + leftIndx);
 
     let offset = 1;
     if(expression.includes("**")){
         offset = 2;
     }
     let rightIndx = indx + offset;
-    while(!(isNaN(expression.charAt(rightIndx))) && rightIndx < expression.length){
-        rightIndx++;
+    // while(!(isNaN(expression.charAt(rightIndx))) && rightIndx < expression.length){
+    //     rightIndx++;
+    // }
+    while(rightIndx < expression.length){
+        if( !(isNaN(expression[rightIndx])) || expression[rightIndx] === '.'){
+            rightIndx++;
+        }else{
+            break;
+        }
     }
     let rightExp = expression.slice(indx+offset, rightIndx)
-    //console.log("Right exp " + rightExp);
-    // if(isNegativeNum){
-    //     return expression.slice(leftIndx+1, indx);
-    // }
     return [leftExp, rightExp];
  }
 
