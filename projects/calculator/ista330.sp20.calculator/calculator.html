@@ -5,13 +5,33 @@
     <title>Project One</title>
 </head>
 <body>
-    <form action="http://localhost:3001" method="GET">
-        <label for="exp">Please enter your numeric expression</label>
-        <br>
-        <input name="expression">
-        <br>
-        <button type="submit">Calculate</button>
-    </form>
+
+    <label for="expression">Please enter your numeric expression:</label>
+    <input name="expression" id="expression" onkeyup="calculateExpression()">
+    <div>
+        <p id = "p1"></p>
+    </div>
+
+
+    <script>
+        let p1 = document.getElementById('p1');
+        function calculateExpression(){
+            let expression = document.getElementById('expression').value;
+            expression = encodeURIComponent(expression);
+            let url = 'http://localhost:3001/?expression=' + expression;
+            fetch(url)
+                .then(response => response.text())
+                .then(result => calculate(result))
+                .catch(e => {console.log(e); alert(e);});
+
+        }
+
+        function calculate(result){
+            p1.innerHTML = result;
+        }
+       
+    
+    </script>
 
 </body>
 </html>
