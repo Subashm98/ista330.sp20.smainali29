@@ -1,7 +1,6 @@
 // dependencies
 const express = require('express');
 const url = require('url');
-// const calculator = require('./calculator.js');
 const cors = require('cors')
 
 //create the server
@@ -65,7 +64,7 @@ app.get('/contents', (request , response) => {
 
 app.get('/contents/:contentId', (request , response) => {
     let contentId = request.params.contentId;
-    console.log("geting wordbank: " + contentId);
+    //console.log("geting wordbank: " + contentId);
     for (var i=0; i < wordbank.length; i++) {
         if (wordbank[i].id === contentId) {
             console.log(wordbank[i]);
@@ -77,10 +76,10 @@ app.get('/contents/:contentId', (request , response) => {
 
 
 app.get('/pages/:contentId/image/:imageId', (request , response) => {
-    console.log("getting page");
+    //console.log("getting page");
     let contentId = request.params.contentId;
     let imageId   = request.params.imageId;
-    console.log(contentId + " " + imageId);
+   // console.log(contentId + " " + imageId);
     for (var i=0; i < tableOfContent.length; i++) {
         //console.log("<>* " + tableOfContent[i].id);
         if (tableOfContent[i].id == contentId) {
