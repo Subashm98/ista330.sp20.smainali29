@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin</title>
+</head>
+<body id='body'>
+    <div id='step1'>
+        <!-- Step 1: Select or create a theme: <input type="text" list="themes">
+        <datalist id="themes">
+            <option value="Supermarket"></option>
+            <option value="Restaurant"></option>
+            <option value="Housework"></option>
+            <option value="Weather"></option>
+        </datalist> -->
+    </div>
+
+    <br>
+    <div id='step2'>
+
+    </div>
+    <br>
+    <div id='step3'>
+
+    </div>
+
+    <datalist id="themes">
+    </datalist> 
+
+    <datalist id="images">
+    </datalist> 
+
+    <canvas id='canvas' height="700" width="600">
+
+    </canvas>
+
+
+    <script type="text/javascript">
+
+        let canvas = document.getElementById('canvas');
+        let ctx    = canvas.getContext('2d');
+
+        let url = "http://localhost:3001";
+        
+        let content;
+        let contentId;
+        let themeImageId;
+        let wordIndx = 1;
+
+        fetch(url + '/contents')
+        .then(response => response.json())
+        .then(content => eventDispather(content))
+        .catch(e => console.log(e));
+
+        function eventDispather(c){
+            content = c;
+            addContent(content);
+        }
+        
+        let body = document.getElementById('body');
+        body.addEventListener("click", handleClickAfterThemeInput, false);
+
+        // event handlers
+        function handleClickAfterThemeInput(){
+            let val = document.getElementById('step1Input').value; 
+            if(val !== ""){
+                //console.log("a1");
+                let isNew = isNewTheme(content, val);
+                body.removeEventListener("click", handleClickAfterThemeInput, false);
+                if(isNew){
+                   // body.removeEventListener("click", handleClickAfterInput, false);
+                    loadStepTwo(val)
+                }else{
+                    
+                    loadStepTwoNewTheme(val);
+                }
+            }
+        }
+
+
+        function handleClickAfterImageInput(){
+            let imageId = document.getElementById('step2Input').value; 
+            if(imageId !== ""){
+                themeImageId = imageId;
+                body.removeEventListener("click", handleClickAfterImageInput, false);
+                loadStepThree();
+            }
+        }
+
+
+        function addContent(content){
+            let step1 = document.getElementById('step1');
+            let datalist = document.getElementById('themes');
+
+            let text  = document.createTextNode("Step 1: Select or create a theme: ");
+            let input = document.createElement('input');
+            input.setAttribute('list', datalist.id);
+            input.setAttribute('id', 'step1Input');
+            //step1.setAttribute('onclick', 'addImage(event)');
+            //input.setAttribute('on', 'addImage(event)');
+            for(let theme of content) {
+                let opt = document.createElement('option');
+                opt.setAttribute('value', theme.name);
+                datalist.appendChild(opt);
+            }
+            step1.appendChild(text);
+            step1.appendChild(input);
+        }
+
+        function loadStepTwo(theme){
+            console.log('Step 2');
+            let step2 = document.getElementById('step2');
+            let datalist = document.getElementById('images');
+
+            let text  = document.createTextNode("Step 2: Select an image: ");
+            let text2  = document.createTextNode(" or upload a new image: ");
+            let input = document.createElement('input');
+            input.setAttribute('list', datalist.id);
+            input.setAttribute('id', 'step2Input');
+
+            let input2 = document.createElement('input');
+            input2.setAttribute('id','step2imageUpload');
+            input2.setAttribute('type','file');
+            input2.setAttribute('accept','images/*');
+            input2.setAttribute('onchange','fileSelected(event)');
+            let themeId = content.find(x => x.name === theme).id;
+            contentId = themeId;
+            //console.log(themeId);
+            // returns id of the imeges in the theme
+            let u = `/pages/${themeId}`;
+            console.log(u);
+            fetch(url + u)
+            .then(response => response.json())
+            .then(images => {
+                //themeImages = images;
+                for(let image of images) {
+                    console.log(image);
+                    let opt = document.createElement('option');
+                    opt.setAttribute('value', image);
+                    datalist.appendChild(opt);
+                }
+            })
+            .catch(e => console.log(e));
+            
+            step2.appendChild(text);
+            step2.appendChild(input);
+            step2.appendChild(text2);
+            step2.appendChild(input2);
+
+            body.addEventListener("click", handleClickAfterImageInput, false);
+
+        }
+
+        function loadStepTwoNewTheme(theme){
+            let step2 = document.getElementById('step2');
+            let datalist = document.getElementById('images');
+
+            let text  = document.createTextNode("Step 2: Upload a new image: ");
+
+            let input = document.createElement('input');
+            input.setAttribute('id','step2imageUpload');
+            input.setAttribute('type','file');
+            input.setAttribute('accept','images/*');
+            input.setAttribute('onchange','fileSelected(event)');
+
+            step2.appendChild(text);
+            step2.appendChild(input);
+
+        }
+
+        function isNewTheme(content, val){
+            const found = content.find(theme => theme.name === val);
+            if(found){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        // '/pages/:contentId/image/:imageId'
+        function loadStepThree(imageId){
+            
+            let step3 = document.getElementById('step3');
+            let text  = document.createTextNode("Step 3: Add labels and words to the image: ");
+
+            step3.appendChild(text);
+
+            let u = `/pages/${contentId}/image/${themeImageId}`;
+            console.log(u);
+            fetch(url + u)
+            .then(response => response.blob())
+            .then(blob => {
+                console.log(blob);
+                fileLoadedFromServer(blob);
+            })
+            .catch(e => console.log(e));
+
+
+
+        }
+
+        // function addImage(event){
+        //     loadCanvas('Supermarket.png');
+        //     console.log("aa");
+        //     let text  = document.createTextNode("Step 2: Select an image: ");
+        //     let text2  = document.createTextNode(" or upload a new image: ");
+        //     let input = document.createElement('input');
+            
+        // }
+
+
+        // let wordIndx = 1;
+        // function loadCanvas(image){
+        //     var img = new Image();
+        //     img.onload =  function(){
+        //         ctx.drawImage(img, 0, 0,canvas.width, canvas.height);
+        //     }
+        //     img.src = '../ista330.sp20.pictureDictionary.api/Data/' + image;
+        //     canvas.onclick = function(){
+        //             console.log(wordIndx);
+        //             let pos = getCursorPosition(event);
+        //             drawCircle(pos, wordIndx); 
+        //             wordIndx++;
+        //     }
+        // }
+
+        function getCursorPosition(event) {
+            const rect = canvas.getBoundingClientRect()
+            const x = event.clientX - rect.left
+            const y = event.clientY - rect.top
+            console.log("x: " + x + " y: " + y)
+            return [x,y];
+        }
+
+        function drawCircle(pos, wordIndx){
+            let offset = 2;
+            let textOffset = 5;
+            let r = 7;
+            ctx.beginPath();
+            ctx.arc(pos[0]-offset, pos[1]-offset, r, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.strokeStyle = "black";
+            ctx.stroke();
+            ctx.fillStyle = 'black';
+            if(wordIndx > 9){
+                textOffset = 8;
+            }
+            ctx.fillText(wordIndx, pos[0]-textOffset, pos[1]+1);
+        }
+
+        function fileSelected(e){
+            let step3 = document.getElementById('step3');
+            let text  = document.createTextNode("Step 3: Add labels and words to the image: ");
+            step3.appendChild(text);
+
+            if(e.target.files && e.target.files[0]) {
+                var reader = new FileReader();
+                reader.onload = fileLoaded;
+                reader.readAsDataURL(e.target.files[0]);
+            }
+
+            canvas.onclick = function(){
+                    console.log(wordIndx);
+                    let pos = getCursorPosition(event);
+                    drawCircle(pos, wordIndx); 
+                    wordIndx++;
+            }
+        }
+
+        function fileLoaded(event) {
+            var image = new Image();
+            image.onload = imageLoaded;
+            image.src = event.target.result;
+
+
+
+        }
+
+        function fileLoadedFromServer(file){
+            var image = new Image();
+            image.onload = imageLoaded;
+            image.src = URL.createObjectURL(file);
+            canvas.onclick = function(){
+                    console.log(wordIndx);
+                    let pos = getCursorPosition(event);
+                    drawCircle(pos, wordIndx); 
+                    wordIndx++;
+            }
+
+        }
+
+        function imageLoaded(event) {
+            console.log(event);
+            ctx.drawImage(event.target, 0, 0, canvas.width, canvas.height);
+        }
+    
+    </script>
+    
+</body>
+</html>

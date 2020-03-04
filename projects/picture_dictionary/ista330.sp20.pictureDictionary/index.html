@@ -1,59 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Picture Dictionary</title>
-</head>
-<body>
-    <H1>A Thematical Picture Dictionary</H1>
-    <ol>
-        <h2>
-            <li>
-                <a href="./pages.html?id=1">Supermarket</a>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+   <div id="themesHolder"></div>
 
-                
-            </li>
-            <li>
-                <a href="./pages.html?id=2">Restaurant</a>
+   <script type="text/javascript">
 
-                
-            </li>
-            <li>
-                <a href="./pages.html?id=3">Housework</a>
+     let url = 'http:localhost:3001';
+     fetch(`${url}/contents`)
+     .then(response => {
+       if(response.status === 200) {
+         return response.json();
+       } else {
+         return Error(response.status);
+       }
+     })
+     .then(themes => display(themes))
+     .catch(e => console.log(e));
 
-                
-            </li>
-            <li>
-                <a href="./pages.html?id=4">Weather</a>
-            </li>
-        </h2>
+     function display(themes) {
+       let ol = document.createElement('ol');
+       for(let theme of themes) {
+         let li = document.createElement('li');
+         let a = document.createElement('a');
+         let text = document.createTextNode(theme.name);
+         a.appendChild(text);
+         a.setAttribute('href', `pages.html?id=${theme.id}&name=${theme.name}`);
+         li.appendChild(a);
+         ol.appendChild(li);
+       }
+       document.getElementById('themesHolder').appendChild(ol);
+     }
 
-    </ol>
-    <script>
-
-        // function getContent(){
-        //     let url = 'http://localhost:3001/pages.html';
-        //     fetch(url, {method:'GET'})
-        //         .then(response => response.json())
-        //         .then(result => showResut(result))
-        //         .catch(e => {console.log(e); alert(e);});
-
-        // }
-
-        // function showResut(result){
-        //     console.log(result);
-        // }
-
-        // let url = 'http://localhost:3001/contents/';
-        // fetch(url)
-        //     .then((response) => { return response.json();})
-        //     .then((json) => {console.log(json);});
-
-    </script>
-
-
-    
-</body>
+   </script>
+  </body>
 </html>

@@ -1,41 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Pages</title>
-</head>
-<body onload="fetchData()">
-    <H1 id="theme"></H1>
-    <div id="imageDiv">
-        <img  id="themeImage" src="" alt="themeImge" height="50%" width="60%">
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <p id="themeTitle"></p>
+
+    <div id="imagesHolder">
+
+    </div>
+
+    <div>
+      <ul id="wordsList">
+
+      </ul>
     </div>
 
 
-    <script>
-        function fetchData(){
-            const queryString = window.location.search;
-            let indx = queryString.indexOf("=");
-            let url = `http://localhost:3001/pages/${queryString[indx+1]}/image/${queryString[indx+1]}`;
-           // console.log(url);
-            fetch(url)
-                .then((response) => { return response.json();})
-                .then((json) => update(json));
-        }
+  <script type="text/javascript">
+    let query = window.location.search;// for example: ?id=1&name=The%20Supermarket
+    let x = query.slice(1).split('&');
+    let themeId = x[0].split('=')[1];
+    let themeName = decodeURIComponent(x[1].split('=')[1]);
+    document.getElementById('themeTitle').innerHTML = themeName;
 
-        function update(json){
-            let theme = json.theme;
-            let path = `../Data/${theme}.png`;
-            let title = document.getElementById("theme");
-            let imgSrc = document.getElementById("themeImage");
-            title.innerHTML = theme;
-            imgSrc.src = path;
-        
+    let url = "http://localhost:3001";
 
+    fetch(url + '/pages/' + themeId)
+    .then(response => {
+      if(response.status === 200) {
+        return response.json();
+      } else {
+        throw Error(response.status);
+      }
+    })
+    .then(imageIds => addImageTags(imageIds))
+    .catch(e => console.log(e));
+
+    function addImageTags(imageIds) {
+      for(let imageId of imageIds) {
+        let image = document.createElement('img');
+        image.setAttribute('src', url + '/pages/' + themeId + "/image/" + imageId);
+        image.setAttribute('onclick', `showWord(event, ${imageId})`);
+        document.getElementById('imagesHolder').appendChild(image);
+      }
+    }
+
+    function showWord(event, imageId) {
+      let objectX = event.offsetX;
+      let objectY = event.offsetY;
+      fetch(url + '/words/' + themeId + '/' + imageId + '/' + objectX + '/' + objectY)
+      .then(response => {
+        if(response.status === 200) {
+          return response.json();
+        } else {
+          throw Error(response.status);
         }
-    
-    </script>
-    
-</body>
+      })
+      .then(word => addToTheList(word))
+      .catch(e => console.log(e));
+    }
+
+    function addToTheList(word) {
+      let li = document.createElement('li');
+      let text = document.createTextNode(`${word.name} - ${word.number}`);
+      li.appendChild(text);
+      document.getElementById('wordsList').appendChild(li);
+    }
+
+    console.log(`${themeId} - ${themeName}`);
+  </script>
+  </body>
 </html>
