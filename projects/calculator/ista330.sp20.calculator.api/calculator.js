@@ -58,7 +58,7 @@ var calculate = function(expression){
 
     // calculate exponent
     while(expression.includes('**')){
-        let indx = expression.indexOf('**');
+        let indx = expression.lastIndexOf('**');
         let nums = extractNumbers(expression,indx);
         let exp  = nums[0] + '**' + nums[1];
         let output = nums[0] ** nums[1];

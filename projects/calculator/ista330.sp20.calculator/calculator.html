@@ -20,7 +20,7 @@
             expression = encodeURIComponent(expression);
             let url = 'http://localhost:3001/?expression=' + expression;
             fetch(url)
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(result => calculate(result))
                 .catch(e => {console.log(e); alert(e);});
 
