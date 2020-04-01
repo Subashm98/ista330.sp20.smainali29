@@ -230,8 +230,8 @@
         //      2. if the method is put: update the name(the word) of the label 
         let word = {name:name, x:x, y:y, number:number, imageId:imageId, id:id}
         if(method === "post"){
-            let i = labels.findIndex(x => x.number === number);
-            labels[i] = id;
+            // let i = labels.findIndex(x => x.number === number);
+            // labels[i] = id;
             fetch(`${url}/label`, {
             method: "post",
             headers: {
@@ -239,6 +239,11 @@
                 // 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: JSON.stringify(word)
+            })
+            .then(response => response.json())
+            .then(newLabelId => {
+                let i = labels.findIndex(x => x.number === number);
+                labels[i].id = newLabelId;
             })
             .catch(e => console.log(e));
         
@@ -251,6 +256,7 @@
                 // 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: JSON.stringify({name:name, id:id})})
+            .then(response => response.json())
             .catch(e => console.log(e));
 
         }

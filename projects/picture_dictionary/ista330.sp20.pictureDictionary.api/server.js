@@ -64,7 +64,12 @@ app.post('/label', (request, response) => {
                                       + "-" + request.body.number
                                       + "-" + request.body.imageId);
   // TODO: save the lable into the database and return the id of the label ** done ** 
-  db.saveLabel(request.body.name,request.body.x,request.body.y,request.body.number,request.body.imageId);
+  db.saveLabel(request.body.name,request.body.x,request.body.y,request.body.number,request.body.imageId)
+    .then(id => response.json(id))
+    .catch(e => {
+      //console.log(e);
+      response.status(500).send('label could not be saved.');
+    });
 });
 
 app.put('/label', (request, response) => {
@@ -73,7 +78,12 @@ app.put('/label', (request, response) => {
                                       + "-" + request.body.id
                                       );
   // TODO: update the label name in the databse ** done **
-  db.updateLabel(request.body.name, request.body.id);
+  db.updateLabel(request.body.name, request.body.id)
+  .then(id => response.json(id))
+  .catch(e => {
+    console.log(e);
+    response.status(500).send('label could not be updated.');
+  });
   
 });
 
@@ -89,9 +99,11 @@ app.get('/labels/:imageId', (request, response) => {
   let date = new Date(Date.now()).toString();
   let imageId = request.params.imageId;
   console.log('/labels/' + imageId);
+   // TODO: get all the labels for the given imageId
   db.getLabels(imageId)
-    .then(x => response.json(x));
-  // TODO: get all the labels for the given imageId
+    .then(x => response.json(x))
+    .catch(e => response.status(500).send('The label could not be retrieved.'));
+ 
 });
 
 app.get('/pages/:contentId', (request, response) => {
@@ -127,12 +139,19 @@ app.get('/words/:contentId/:imageId/:objectX/:objectY', (request, response) => {
   let objectY = Number(request.params.objectY);
   console.log(`${contentId} ${imageId}`);
   // TODO: get the word for the given imageId, objectX and objectY
-  db.getLabel(imageId, x, y)
+  db.getLabel(imageId, objectX, objectY)
     .then(result => {
       if(result){
-        return response.json({name:result.name, number: AudioWorkletNode.number})
+        return response.json({name:result.name, number: result.number})
+      }else{
+        response.status(404).send('No word match found.');
       }
+      
     })
+    .catch(e => {
+      response.status(404).send('No word found.');
+    });
+
 
 });
 

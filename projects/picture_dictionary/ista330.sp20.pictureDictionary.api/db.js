@@ -78,13 +78,14 @@ function getLabels(imageId) {
     // you can use the following sql statement:
     //  select  * from word where imageid = $1 and abs(x - $2) < 7 and abs(y - $3) < 7
     return postgrePool.query('SELECT * FROM word WHERE imageid = $1 and abs(x - $2) < 7 and abs(y - $3) < 7', [imageId,x,y])
-                      .then(result => result.rows);
+                      .then(result => result.rows[0]);
   
   }
   
   function saveLabel(name, x, y, number, imageId) {
      //TODO: insert a new record in the word table and return its id
-     postgrePool.query('INSERT INTO word(name,x,y,number,imageId) values($1,$2,$3,$4,$5) ', [name, x, y, number, imageId]);
+     postgrePool.query('INSERT INTO word(name,x,y,number,imageId) values($1,$2,$3,$4,$5) ', [name, x, y, number, imageId])
+                .then(result => result.rows[0].id);
                  
   
   }
