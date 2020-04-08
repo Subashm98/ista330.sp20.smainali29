@@ -84,8 +84,14 @@ function getLabels(imageId) {
   
   function saveLabel(name, x, y, number, imageId) {
      //TODO: insert a new record in the word table and return its id
-     postgrePool.query('INSERT INTO word(name,x,y,number,imageId) values($1,$2,$3,$4,$5) ', [name, x, y, number, imageId])
-                .then(result => result.rows[0].id);
+    //return postgrePool.query('INSERT INTO word(name,x,y,number,imageId) values($1,$2,$3,$4,$5) returning *', [name, x, y, number, imageId])
+    //     .then(result => {console.log(result.rows[0].id); result.rows[0].id});
+    return new Promise(function (resolve, reject){
+        postgrePool.query('INSERT INTO word(name,x,y,number,imageId) values($1,$2,$3,$4,$5) returning *', [name, x, y, number, imageId])
+                           .then(result => {console.log(result.rows[0].id); resolve( result.rows[0].id)})
+                           .catch(e => reject(e));
+    } );                 
+
                  
   
   }

@@ -142,7 +142,7 @@
       // get the current themes
       getAndDispalyThemes();
 
-      function saveImage() {
+      function saveImage(persistLabelFunction) {
         canvas.toBlob(blob => {
           const formData = new FormData();
           formData.append('image', blob);
@@ -150,11 +150,14 @@
           if (currentImageId === -1) {
               fetch(`${url}/image/${themeId}`, {method: 'POST', body: formData})
               .then(getJsonFromResponse)
-              .then(x => {console.log(x); currentImageId = x;});
+              .then(x => {console.log(x); currentImageId = x; persistLabelFunction()})
+              .catch(e => console.log(e));
 
          } else {
            fetch(`${url}/image/${currentImageId}`, {method: 'PUT', body: formData})
-           .then(getJsonFromResponse);
+           .then(getJsonFromResponse)
+           .then( () => persistLabelFunction())
+           .catch(e => console.log(e));
          }
         });
       }
@@ -189,11 +192,10 @@
         context.fill();
         context.fillStyle = 'black';
         context.fillText(number, x-3, y+3);
-        saveImage();
+        let saveLabelFunction = () =>  saveLabel('post', 'undefined', x, y, number, currentImageId, -1);
+        saveImage(saveLabelFunction);
         labels.push({x:x, y:y, number: number, name:'', id:-1});
-        saveLabel('post', 'undefined', x, y, number, currentImageId, -1);
-
-
+      
       }
 
       function showAddLabelModal(x, y) {
@@ -232,15 +234,16 @@
         if(method === "post"){
             // let i = labels.findIndex(x => x.number === number);
             // labels[i] = id;
-            fetch(`${url}/label`, {
+           return fetch(`${url}/label`, {
             method: "post",
             headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
+                //'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: JSON.stringify(word)
             })
-            .then(response => response.json())
+            .then(getJsonFromResponse)
+            //.then(response => response.json())
             .then(newLabelId => {
                 let i = labels.findIndex(x => x.number === number);
                 labels[i].id = newLabelId;
@@ -249,14 +252,15 @@
         
         }   
         if(method === "put"){
-            fetch(`${url}/label`, {
+           return fetch(`${url}/label`, {
             method: "put",
             headers: {
                 'Content-Type': 'application/json'
                 // 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: JSON.stringify({name:name, id:id})})
-            .then(response => response.json())
+            .then(getJsonFromResponse)
+            //.then(response => response.json())
             .catch(e => console.log(e));
 
         }

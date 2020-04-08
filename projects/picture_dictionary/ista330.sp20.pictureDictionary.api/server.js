@@ -65,9 +65,9 @@ app.post('/label', (request, response) => {
                                       + "-" + request.body.imageId);
   // TODO: save the lable into the database and return the id of the label ** done ** 
   db.saveLabel(request.body.name,request.body.x,request.body.y,request.body.number,request.body.imageId)
-    .then(id => response.json(id))
+    .then(x => {console.log("id: " + x); response.json(x)})
     .catch(e => {
-      //console.log(e);
+      console.log(e);
       response.status(500).send('label could not be saved.');
     });
 });
